@@ -1,0 +1,29 @@
+#!/bin/bash
+#SBATCH -J BaZrO3_cubic_BS           # job name
+#SBATCH -o BaZrO3_BS.o%j       # output and error file name (%j expands to jobID)
+#SBATCH -n 32              # total number of mpi tasks requested
+#SBATCH -p normal     # queue (partition) -- normal, development, etc.
+#SBATCH -t 2:00:00        # run time (hh:mm:ss) 
+#SBATCH -A TG-DMR110085   # which account to debit hours from
+#SBATCH --mail-user=monsieurwagner@gmail.com
+#SBATCH --mail-type=end    # email me when the job finishes
+
+aflow --findsym < POSCAR  | sed '1,/CIF/d' > BaZrO3_findsym.cif
+
+sed -i "s/LCHARG = .FALSE./LCHARG = .TRUE./" INCAR.static
+
+cp KPOINTS.static KPOINTS
+cp INCAR.static INCAR
+ibrun vasp_std > out.static
+cp OUTCAR OUTCAR.static
+
+sed "s/ICHARG = .*/ICHARG = 11/" INCAR.static > INCAR.bands
+sed -i "s/ISMEAR = .*/ISMEAR = 0/" INCAR.bands
+sed -i "s/.*SIGMA = .*/SIGMA = 0.1/" INCAR.bands
+
+aflow --kpath < POSCAR > KPOINTS.bands
+sed -i "1,/KPOINTS/d" KPOINTS.bands
+sed -i '$d' KPOINTS.bands
+cp KPOINTS.bands KPOINTS
+cp INCAR.bands INCAR
+ibrun vasp_std > out.bands
