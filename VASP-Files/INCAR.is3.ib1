@@ -1,0 +1,68 @@
+System = BaTiO3   # Title string for user convenience
+
+#Start parameters
+ISTART =      1  #  job   : 0-new  1-cont  2-samecut
+ICHARG =      1  #  charge: 1-file 2-atom 10-const
+INIWAV =      1  #  electr: 0-lowe 1-rand
+
+# Convergence tolerance
+EDIFF = 1e-7   # Difference in energy allowed before electronic convergence
+SYMPREC = 1e-4 # Precision in finding symmetry of structure
+ALGO = NORMAL  # stable blocked Davidson scheme
+NELM = 40      # Maximum number of electronic steps before giving up
+#NELMDL = 3    # Number of non-selfconsistent electronic steps at start
+
+# High prec for force calculations
+#ENAUG = 1
+#ADDGRID = .TRUE.
+
+# Density of States Info
+NEDOS = 4001   # Increase for high resolution DOS plots
+EMIN = -15
+EMAX = 15
+
+LORBIT = 11    # Project DOS onto individual atoms' orbitals
+
+# BZ Integrations
+ISMEAR = 0 # 0=Gaussian, -5=Tetrahedron method
+SIGMA = 0.1 # Smearing width for Gaussian in eV
+
+#Mixing
+#AMIX = 0.2
+#BMIX = 0.0001
+#AMIX_MAG = 0.8
+#BMIX_MAG = 0.0001
+
+# Calculation Details
+LWAVE = .FALSE. # Do we want to write the wavefunctions (usually in GB)
+LCHARG = .FALSE. # Do we want to write the charge density (usually <1GB)
+PREC = ACCURATE # ENCUT set according to PAW
+ENCUT = 600 # Plane wave energy cutoff
+LREAL = .FALSE. # real space projection; disable for higher accuracy in forces
+
+#LSDA + U
+#LDAU = .TRUE.
+#LDAUTYPE = 2    # Method of Dudarev
+#LDAUL = -1 2 -1 # Which species will have Hubbard U enabled
+#LDAUU = 0 3.9 0 # Effective U is U-J
+#LDAUJ = 0 0 0
+#LMAXMIX = 4     # Apply to d-orbitals
+#LDAUPRINT = 1   # Verbosity of output
+#LASPH = .TRUE.  # include non-spherical contributions from the gradient corrections inside the PAW spheres
+
+# Relaxation parameters
+NSW = 40 # number of ionic steps
+ISIF = 3 # calculate force and relax ions and lattice parameters
+IBRION = 1 # Newtonian method for mini_opt
+POTIM = 0.2 # quasi_newton scalar for ionic relaxation step
+EDIFFG = -0.0005
+
+#Magnetism
+ISPIN = 2 # Turn on collinear magnetism
+MAGMOM = 4*0 6.0 -6.0 6.0 -6.0 12*0 # Specify starting moments for each ion
+
+#Parallelization
+LPLANE = .TRUE.
+NPAR   = 4
+LSCALU = .FALSE.
+NSIM   = 4
