@@ -36,7 +36,7 @@ SIGMA = 0.1 # Smearing width for Gaussian in eV
 # Calculation Details
 LWAVE = .FALSE. # Do we want to write the wavefunctions (usually in GB)
 LCHARG = .FALSE. # Do we want to write the charge density (usually <1GB)
-PREC = ACCURATE # ENCUT set according to PAW
+PREC = HIGH # Accurate FFT grid
 ENCUT = 600 # Plane wave energy cutoff
 LREAL = .FALSE. # real space projection; disable for higher accuracy in forces
 
