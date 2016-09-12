@@ -1,4 +1,4 @@
-System = BaTiO3   # Title string for user convenience
+System = SrMnO3   # Title string for user convenience
 
 #Start parameters
 ISTART =      1  #  job   : 0-new  1-cont  2-samecut
