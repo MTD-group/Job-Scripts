@@ -1,4 +1,4 @@
-System = SrMnO3   # Title string for user convenience
+System = SrTiO3   # Title string for user convenience
 
 #Start parameters
 ISTART =      1  #  job   : 0-new  1-cont  2-samecut
@@ -17,7 +17,7 @@ NELM = 40      # Maximum number of electronic steps before giving up
 #ADDGRID = .TRUE.
 
 # Density of States Info
-NEDOS = 4001   # Increase for high resolution DOS plots
+NEDOS = 3001   # Increase for high resolution DOS plots
 EMIN = -15
 EMAX = 15
 
@@ -37,11 +37,11 @@ ISMEAR = -5 # 0=Gaussian, -5=Tetrahedron method
 LWAVE = .FALSE. # Do we want to write the wavefunctions (usually in GB)
 LCHARG = .TRUE. # Do we want to write the charge density (usually <1GB)
 PREC = HIGH # Accurate FFT grid
-ENCUT = 700 # Plane wave energy cutoff
+ENCUT = 600 # Plane wave energy cutoff
 LREAL = .FALSE. # real space projection; disable for higher accuracy in forces
 
 #LSDA + U
-#LDAU = .TRUE.
+#LDAU = .TRUE.   # Use Hubbard U or not
 #LDAUTYPE = 2    # Method of Dudarev
 #LDAUL = -1 2 -1 # Which species will have Hubbard U enabled
 #LDAUU = 0 3.9 0 # Effective U is U-J
@@ -58,11 +58,11 @@ NSW = 0 # number of ionic steps
 #EDIFFG = -0.0005
 
 #Magnetism
-ISPIN = 2 # Turn on collinear magnetism
-MAGMOM = 4*0 6.0 -6.0 6.0 -6.0 12*0 # Specify starting moments for each ion
+#ISPIN = 2 # Turn on collinear magnetism
+#MAGMOM = 4*0 6.0 -6.0 6.0 -6.0 12*0 # Specify starting moments for each ion
 
 #Parallelization
 LPLANE = .TRUE.
-NPAR   = 4
+NPAR   = 4  # Parallelize over bands. Should be factor of number of cores
 LSCALU = .FALSE.
 NSIM   = 4
