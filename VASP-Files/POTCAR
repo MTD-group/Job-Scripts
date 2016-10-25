@@ -1,0 +1,2 @@
+In a real POTCAR file, you would concatenate the pseudopotentials for your compound in the order they appear in your POSCAR.
+VASP pseudopotentials are proprietary which is why there is not a real file here.
