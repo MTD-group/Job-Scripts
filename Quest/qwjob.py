@@ -73,6 +73,7 @@ rm WAVECAR\n'''
 
 # Boilerplate for ISIF relaxations
 relax_text = '''cp KPOINTS.static KPOINTS
+cp POSCAR POSCAR.orig
 sed "s/ISMEAR = .*/ISMEAR = 0/" INCAR.static > INCAR.is%s.ib1
 sed -i "s/.*SIGMA = .*/SIGMA = 0.1/" INCAR.is%s.ib1
 sed -i "s/.*LCHARG = .*/LCHARG = .FALSE./" INCAR.is%s.ib1
