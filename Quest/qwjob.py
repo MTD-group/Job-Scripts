@@ -46,7 +46,7 @@ with open('run_vasp.q', 'w') as f:
 module load mpi/openmpi-1.6.3-intel2013.2
 ulimit -s unlimited
 nprocs=`wc -l $PBS_NODEFILE | awk '{ print $1 }'`
-echo $PBS_NODEFILE\n''')
+echo $PBS_NODEFILE\n\n''')
 
 # Boilerplate for DOS and BS calculations
 static_text = '''cp INCAR.static INCAR
@@ -67,11 +67,13 @@ cp KPOINTS.bands KPOINTS
 cp INCAR.bands INCAR
 mpirun -n $nprocs /projects/b1027/VASPwannier90.5.3.5/vasp.5.3/vasp > out.bands
 mv vasprun.xml %s_BS.xml
+mv OUTCAR OUTCAR.bands
 rm WAVECAR\n'''
 
 
 # Boilerplate for ISIF relaxations
-relax_text = '''sed "s/ISMEAR = .*/ISMEAR = 0/" INCAR.static > INCAR.is%s.ib1
+relax_text = '''cp KPOINTS.static KPOINTS
+sed "s/ISMEAR = .*/ISMEAR = 0/" INCAR.static > INCAR.is%s.ib1
 sed -i "s/.*SIGMA = .*/SIGMA = 0.1/" INCAR.is%s.ib1
 sed -i "s/.*LCHARG = .*/LCHARG = .FALSE./" INCAR.is%s.ib1
 sed -i "s/NSW = .*/NSW = 40/" INCAR.is%s.ib1
@@ -96,11 +98,7 @@ mv OUTCAR OUTCAR.is%s.ib1.$it
 cp CONTCAR CONTCAR.is%s.ib1.$it
 cp CONTCAR POSCAR
 
-done
-
-cp INCAR.static INCAR
-mpirun -n $nprocs /projects/b1027/VASPwannier90.5.3.5/vasp.5.3/vasp > out.static
-rm WAVECAR'''
+done\n\n'''
 
 #Commands for calculating DOS and band structure
 if args.jtype == 'static':
