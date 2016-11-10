@@ -6,7 +6,7 @@ if not os.path.isfile('POTCAR'):
     import wpot
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-n", nargs='+', action="store",
+parser.add_argument("-n", action="store",
         dest="arguments", default="b1029_2_jobname_8",
         help='''Specify account number, number of nodes, job name, and wall time
         in hours separated by underscores: e.g. Acct_NodeNum_Name_Time''')
