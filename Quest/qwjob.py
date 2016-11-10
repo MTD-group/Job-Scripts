@@ -79,7 +79,7 @@ sed -i "s/.*LCHARG = .*/LCHARG = .FALSE./" INCAR.is%s.ib1
 sed -i "s/NSW = .*/NSW = 40/" INCAR.is%s.ib1
 sed -i "s/.*ISIF = .*/ISIF = %s/" INCAR.is%s.ib1
 sed -i "s/.*IBRION = .*/IBRION = 1/" INCAR.is%s.ib1
-sed -i "s/.*POTIM = .*/IBRION = 0.2/" INCAR.is%s.ib1
+sed -i "s/.*POTIM = .*/POTIM = 0.2/" INCAR.is%s.ib1
 sed -i "s/.*EDIFFG = .*/EDIFFG = -0.0005/" INCAR.is%s.ib1
 sed -i "s/ENCUT = .*/ENCUT = %s/" INCAR.is%s.ib1
 sed "s/IBRION = 1/IBRION = 2/" INCAR.is%s.ib1 > INCAR.is%s.ib2
