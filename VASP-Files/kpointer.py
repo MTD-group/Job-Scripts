@@ -1,4 +1,5 @@
 #!/home/naw356/bin/python
+# Put your Python executable location on the first line
 import argparse, os.path
 
 parser = argparse.ArgumentParser()
@@ -14,7 +15,7 @@ if params[3] == 'M':
 else:
     mesh = 'Gamma centered mesh'
 
-with open('KPOINTS.stati', 'w') as f:
+with open('KPOINTS.static', 'w') as f:
     f.write('''Automatic mesh
 0          ! Auto k-point generation scheme
 %s          ! %s 
