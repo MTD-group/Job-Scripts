@@ -6,19 +6,12 @@ import argparse, os.path
 # static calculation parameters
 # named INCAR.static to exist
 
-# If KPOINTS.static is not found, write one
-if not os.path.isfile('KPOINTS.static'):
-    import kpointer
-
-# If POTCAR is not found, write one from POSCAR
-if not os.path.isfile('POTCAR'):
-    import wpot
-
 parser = argparse.ArgumentParser()
 parser.add_argument("-n", action="store",
         dest="arguments", default="32_jobname_8",
         help='''Specify number of cpus, job name, and wall time
-        in hours separated by underscores: e.g. Num_Name_Time''')
+        in hours separated by underscores: e.g. Num_Name_Time
+        32_jobname_8 is default''')
 parser.add_argument("-jt", action='store', dest='jtype', default='static',
         help='''Job type. 'static' and 'relax' are current options''')
 parser.add_argument("-isif", action='store', dest='isif', default=3,
@@ -30,6 +23,15 @@ args = parser.parse_args()
 isif = int(args.isif)
 params = args.arguments.split("_")
 
+# If POTCAR is not found, write one from POSCAR
+if not os.path.isfile('POTCAR'):
+    import wpot
+
+# If KPOINTS.static is not found, write one
+if not os.path.isfile('KPOINTS.static'):
+    import kpointer
+
+
 # Store ENCUT value for changing later
 with open('INCAR.static', 'r') as inF:
     for line in inF:
@@ -40,7 +42,7 @@ with open('INCAR.static', 'r') as inF:
 with open('run_vasp.q', 'w') as f:
     f.write('#!/bin/bash\n')
     f.write('#SBATCH -J %s     # job name\n' % params[1])
-    f.write('#SBATCH -o %s.o%j    #output and error file name\n' % params[1])
+    f.write('#SBATCH -o %s.o%%j    #output and error file name\n' % params[1])
     f.write('#SBATCH -n %s\n' % params[0])
     f.write('#SBATCH -p normal     # queue\n')
     f.write('#SBATCH -t %s:00:00      #run time (hh:mm:ss)\n' % params[2])
@@ -51,6 +53,7 @@ with open('run_vasp.q', 'w') as f:
 # Boilerplate for DOS and BS calculations
 static_text = '''cp INCAR.static INCAR
 cp KPOINTS.static KPOINTS
+sed -i "s/NSW = .*/NSW = 0 # number of ionic steps/" INCAR
 ibrun vasp_std > out.static
 mv OUTCAR OUTCAR.static
 mv vasprun.xml %s_dos.xml
