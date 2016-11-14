@@ -62,6 +62,7 @@ sed "s/ICHARG = .*/ICHARG = 11/" INCAR.static > INCAR.bands
 sed -i "s/ISMEAR = .*/ISMEAR = 0/" INCAR.bands
 sed -i "s/.*SIGMA = .*/SIGMA = 0.1/" INCAR.bands
 sed -i "s/.*LCHARG = .*/LCHARG = .FALSE./" INCAR.bands
+sed -i "s/LREAL = .*/LREAL = .FALSE./" INCAR*
 aflow --kpath < POSCAR > KPOINTS.bands
 sed -i "1,/KPOINTS/d" KPOINTS.bands
 sed -i '$d' KPOINTS.bands
@@ -80,6 +81,7 @@ sed "s/ISMEAR = .*/ISMEAR = 0/" INCAR.static > INCAR.is%s.ib1
 sed -i "s/.*SIGMA = .*/SIGMA = 0.1/" INCAR.is%s.ib1
 sed -i "s/.*LCHARG = .*/LCHARG = .FALSE./" INCAR.is%s.ib1
 sed -i "s/NSW = .*/NSW = 40/" INCAR.is%s.ib1
+sed -i "s/LREAL = .*/LREAL = .FALSE./" INCAR*
 sed -i "s/.*ISIF = .*/ISIF = %s/" INCAR.is%s.ib1
 sed -i "s/.*IBRION = .*/IBRION = 1/" INCAR.is%s.ib1
 sed -i "s/.*POTIM = .*/POTIM = 0.2/" INCAR.is%s.ib1
