@@ -51,6 +51,7 @@ echo $PBS_NODEFILE\n\n''')
 # Boilerplate for DOS and BS calculations
 static_text = '''cp INCAR.static INCAR
 cp KPOINTS.static KPOINTS
+sed -i "s/LREAL = .*/LREAL = .FALSE./" INCAR*
 mpirun -n $nprocs /projects/b1027/VASPwannier90.5.3.5/vasp.5.3/vasp > out.static
 mv OUTCAR OUTCAR.static
 mv vasprun.xml %s_dos.xml
@@ -84,6 +85,7 @@ sed -i "s/.*POTIM = .*/POTIM = 0.2/" INCAR.is%s.ib1
 sed -i "s/.*EDIFFG = .*/EDIFFG = -0.0005/" INCAR.is%s.ib1
 sed -i "s/ENCUT = .*/ENCUT = %s/" INCAR.is%s.ib1
 sed "s/IBRION = 1/IBRION = 2/" INCAR.is%s.ib1 > INCAR.is%s.ib2
+sed -i "s/LREAL = .*/LREAL = .FALSE./" INCAR*
 
 for it in 1 2 3
 do
