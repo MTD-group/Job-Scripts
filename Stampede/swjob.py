@@ -39,7 +39,7 @@ with open('INCAR.static', 'r') as inF:
             encut = line.split()[2]
 
 #SBATCH commands for header
-with open('run_vasp.q', 'w') as f:
+with open('run_vasp.job', 'w') as f:
     f.write('#!/bin/bash\n')
     f.write('#SBATCH -J %s     # job name\n' % params[1])
     f.write('#SBATCH -o %s.o%%j    #output and error file name\n' % params[1])
