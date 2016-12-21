@@ -1,4 +1,5 @@
 #!/opt/apps/intel15/python/2.7.12/bin/python
+# Generates a KPOINTS file for DOS calculation
 # Put your Python executable location on the first line
 import argparse, os.path
 
