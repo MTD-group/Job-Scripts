@@ -54,6 +54,7 @@ with open('run_vasp.job', 'w') as f:
 static_text = '''cp INCAR.static INCAR
 cp KPOINTS.static KPOINTS
 sed -i "s/NSW = .*/NSW = 0 # number of ionic steps/" INCAR
+sed -i "s/LCHARG = .FALSE./LCHARG = .TRUE./" INCAR.static
 ibrun vasp_std > out.static
 mv OUTCAR OUTCAR.static
 mv vasprun.xml %s_dos.xml
