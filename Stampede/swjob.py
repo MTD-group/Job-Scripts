@@ -119,3 +119,22 @@ if args.jtype == 'relax':
         a.extend([isif]*12)
         f.write(relax_text % tuple(a))
         f.write(static_text % (params[1], params[1]))
+        
+if args.jtype == 'elastics':
+    import pymatgen as mg
+    import os
+    from shutil import copyfile
+    structure = mg.Structure.from_file("POSCAR")
+    def_set = DeformedStructureSet(structure)
+    count = 1
+    for f in def_set:
+        os.mkdir("./strain%s" % count)
+        f.to(fmt="POSCAR", filename="./strain%s/POSCAR" % count)
+        copyfile("POTCAR", "./strain%s/POTCAR" % count)
+        copyfile("KPOINTS", "./strain%s/KPOINTS" % count)
+        copyfile("INCAR.static", "./strain%s/INCAR.static" % count)
+        os.chdir("./strain%s" % count)
+        os.system("swjob.py -jt relax -isif 2 -n 64_BMOelast%s_8" % count) 
+        os.chdir("../")
+        count+=1
+
