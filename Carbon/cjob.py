@@ -10,10 +10,10 @@ import argparse, os.path
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-n", action="store",
-        dest="arguments", default="8_jobname_8",
+        dest="arguments", default="4_jobname_8",
         help='''Specify number of nodes, job name, and wall time
         in hours separated by underscores: e.g. Num_Name_Time. 
-        8_jobname_8 is default''')
+        4_jobname_8 is default''')
 parser.add_argument("-jt", action='store', dest='jtype', default='static',
         help='''Job type. 'static' and 'relax' are current options''')
 parser.add_argument("-isif", action='store', dest='isif', default=3,
@@ -51,13 +51,14 @@ with open('run_vasp.job', 'w') as f:
     f.write('#PBS -A cnm*****  # account to charge\n')
     f.write('#PBS -M %s\n' % email)
     f.write('#PBS -m ea     # email when job finishes or aborts\n\n')
+    f.write("cd $PBS_O_WORKDIR\n\n")
 
 # Boilerplate for DOS and BS calculations
 static_text = '''cp INCAR.static INCAR
 cp KPOINTS.static KPOINTS
 sed -i "s/NSW = .*/NSW = 0 # number of ionic steps/" INCAR
 sed -i "s/LCHARG = .FALSE./LCHARG = .TRUE./" INCAR.static
-ibrun vasp_std > out.static
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP vasp > out.static
 mv OUTCAR OUTCAR.static
 mv vasprun.xml %s_dos.xml
         
@@ -66,12 +67,9 @@ sed -i "s/ISMEAR = .*/ISMEAR = 0/" INCAR.bands
 sed -i "s/.*SIGMA = .*/SIGMA = 0.1/" INCAR.bands
 sed -i "s/.*LCHARG = .*/LCHARG = .FALSE./" INCAR.bands
 sed -i "s/LREAL = .*/LREAL = .FALSE./" INCAR*
-aflow --kpath < POSCAR > KPOINTS.bands
-sed -i "1,/KPOINTS/d" KPOINTS.bands
-sed -i '$d' KPOINTS.bands
 cp KPOINTS.bands KPOINTS
 cp INCAR.bands INCAR
-ibrun vasp_std > out.bands
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP vasp > out.bands
 mv vasprun.xml %s_BS.xml
 mv OUTCAR OUTCAR.bands
 rm WAVECAR\n'''
@@ -94,12 +92,12 @@ sed "s/IBRION = 1/IBRION = 2/" INCAR.is%s.ib1 > INCAR.is%s.ib2
 for it in 1 2 3
 do
 cp INCAR.is%s.ib2 INCAR
-ibrun vasp_std > out.is%s.ib2.$it
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP vasp > out.is%s.ib2.$it
 mv OUTCAR OUTCAR.is%s.ib2.$it
 cp CONTCAR CONTCAR.is%s.ib2.$it
 cp  CONTCAR.is%s.ib2.$it POSCAR
 cp INCAR.is%s.ib1 INCAR
-ibrun vasp_std > out.is%s.ib1.$it
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP vasp > out.is%s.ib1.$it
 mv OUTCAR OUTCAR.is%s.ib1.$it
 cp CONTCAR CONTCAR.is%s.ib1.$it
 cp CONTCAR POSCAR
