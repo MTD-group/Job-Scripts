@@ -33,6 +33,9 @@ if not os.path.isfile('POTCAR'):
 if not os.path.isfile('KPOINTS.static'):
     import kpointer
 
+# If KPOINTS.bands is not found, write one
+if not os.path.isfile('KPOINTS.bands'):
+    os.system("~/bin/kpath")
 
 # Store ENCUT value for changing later
 with open('INCAR.static', 'r') as inF:
@@ -54,10 +57,11 @@ with open('run_vasp.job', 'w') as f:
     f.write("cd $PBS_O_WORKDIR\n\n")
 
 # Boilerplate for DOS and BS calculations
-static_text = '''cp INCAR.static INCAR
-cp KPOINTS.static KPOINTS
-sed -i "s/NSW = .*/NSW = 0 # number of ionic steps/" INCAR
+static_text = '''sed -i "s/NSW = .*/NSW = 0 # number of ionic steps/" INCAR.static
 sed -i "s/LCHARG = .FALSE./LCHARG = .TRUE./" INCAR.static
+sed -i "s/ISMEAR = .*/ISMEAR = -5/" INCAR.static
+cp INCAR.static INCAR
+cp KPOINTS.static KPOINTS
 mpirun -machinefile $PBS_NODEFILE -np $PBS_NP vasp > out.static
 mv OUTCAR OUTCAR.static
 mv vasprun.xml %s_dos.xml
