@@ -1,4 +1,4 @@
-#!/opt/soft/python-2.7.3-1/bin/python
+#!/home/nawagner/anaconda3/bin/python
 import argparse, os.path
 
 # Author: Nick Wagner
@@ -136,7 +136,7 @@ if args.jtype == 'relax':
         f.write(relax_text % tuple(a))
         f.write(static_text % (params[1], params[1]))
         
-if args.jtype == 'elast'
+if args.jtype == 'elast':
     rel_encut = str(int(encut)*0.9)
     isif = 2
     with open('run_vasp.job', 'a') as f:
