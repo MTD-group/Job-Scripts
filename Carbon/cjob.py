@@ -34,7 +34,7 @@ if not os.path.isfile('KPOINTS.static'):
     import kpointer
 
 # If KPOINTS.bands is not found bu called for, write one
-if not os.path.isfile('KPOINTS.bands') and jtype != 'elast':
+if not os.path.isfile('KPOINTS.bands') and args.jtype != 'elast':
     os.system("~/bin/kpath")
 
 # Store ENCUT value for changing later
@@ -145,4 +145,4 @@ if args.jtype == 'elast':
         a.append(rel_encut)
         a.extend([isif]*12)
         f.write(relax_text % tuple(a))
-        f.write(elast_text % (params[1], params[1]))
+        f.write(elast_text)
