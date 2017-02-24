@@ -1,3 +1,2 @@
-These scripts are provided to automate some of the calculations you may run on the Carbon cluster at CNM.
-They often involve copying files to the user's local machine to get around outdated 
-compilers which prevent the Material Project's pymatgen library from being loaded. 
+These scripts are provided to automate some of the calculations you may run on the Carbon cluster at CNM. They often involve copying files to the user's local machine to get around 
+outdated compilers which prevent the Material Project's pymatgen library from being loaded. 
