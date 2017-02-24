@@ -8,7 +8,8 @@
 #  5. Instead of deadpool, have an entry in your ~/.ssh/config file for your own local machine
 #  6. cjob.py has to be located in your path on Carbon
 
-# Purpose: Creates strained POSCAR files for extracting elastic constant matrix in line with Materials Project workflow
+# Purpose: Creates strained POSCAR files for extracting elastic constant matrix in line with Materials Project workflow.
+# Then uses those POSCARs with provided INCAR.static to setup and queue 24 calculations. 
 
 # See also extract_elast_consts.py for post-processing
 
