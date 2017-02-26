@@ -37,6 +37,10 @@ if not os.path.isfile('KPOINTS.static'):
 if not os.path.isfile('KPOINTS.bands') and args.jtype != 'elast':
     os.system("~/bin/kpath")
 
+# If INCAR.static does not exist, write one
+if not os.path.isfile('INCAR.static'):
+    import incar_writer
+
 # Store ENCUT value for changing later
 with open('INCAR.static', 'r') as inF:
     for line in inF:
