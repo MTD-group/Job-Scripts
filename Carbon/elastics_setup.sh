@@ -27,7 +27,7 @@ do
     mv POSCAR$i poscar$i/POSCAR
     cp POTCAR KPOINTS.static INCAR.static poscar$i/
     cd poscar$i
-    cjob.py -jt elast -n 2_elast${i}_13
+    cjob.py -jt elast -n 3_elast${i}_13
     qsub r*.job > JID
     cd ..
 done
