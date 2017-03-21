@@ -1,9 +1,5 @@
-#!/home/naw356/bin/python
-import argparse, os.path
-
-# If POTCAR is not found, write one from POSCAR
-if not os.path.isfile('POTCAR'):
-    import wpot
+#!/software/anaconda2/bin/python
+import argparse, os.path, shutil
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-n", action="store",
@@ -11,7 +7,7 @@ parser.add_argument("-n", action="store",
         help='''Specify account number, number of nodes, job name, and wall time
         in hours separated by underscores: e.g. Acct_NodeNum_Name_Time''')
 parser.add_argument("-jt", action='store', dest='jtype', default='static',
-        help='''Job type. 'static' and 'relax' are current options''')
+        help='''Job type. 'static', 'relax', and 'elast' are current options''')
 parser.add_argument("-isif", action='store', dest='isif', default=3,
         help='''Relaxation scheme. 3 is default''')
 
@@ -25,6 +21,19 @@ if params[0] == "b1029":
     ppn = 24
 else:
     ppn=20
+
+# If POTCAR is not found, write one from POSCAR
+if not os.path.isfile('POTCAR'):
+        import wpot
+
+# If KPOINTS.static is not found, write one
+if not os.path.isfile('KPOINTS.static'):
+    shutil.copyfile("INCAR.static", "INCAR")
+    import kpointer
+
+# If KPOINTS.bands is not found but called for, write one
+if not os.path.isfile('KPOINTS.bands') and args.jtype != 'elast':
+    import kpath
 
 # Store ENCUT value for changing later
 with open('INCAR.static', 'r') as inF:
@@ -51,7 +60,8 @@ echo $PBS_NODEFILE\n\n''')
 # Boilerplate for DOS and BS calculations
 static_text = '''cp INCAR.static INCAR
 cp KPOINTS.static KPOINTS
-sed -i "s/LREAL = .*/LREAL = .FALSE./" INCAR*
+sed -i "s/NSW = .*/NSW = 0 # number of ionic steps/" INCAR
+sed -i "s/LCHARG = .FALSE./LCHARG = .TRUE./" INCAR.static
 mpirun -n $nprocs /projects/b1027/VASPwannier90.5.3.5/vasp.5.3/vasp > out.static
 mv OUTCAR OUTCAR.static
 mv vasprun.xml %s_dos.xml
@@ -61,9 +71,6 @@ sed -i "s/ISMEAR = .*/ISMEAR = 0/" INCAR.bands
 sed -i "s/.*SIGMA = .*/SIGMA = 0.1/" INCAR.bands
 sed -i "s/.*LCHARG = .*/LCHARG = .FALSE./" INCAR.bands
 
-aflow --kpath < POSCAR > KPOINTS.bands
-sed -i "1,/KPOINTS/d" KPOINTS.bands
-sed -i '$d' KPOINTS.bands
 cp KPOINTS.bands KPOINTS
 cp INCAR.bands INCAR
 mpirun -n $nprocs /projects/b1027/VASPwannier90.5.3.5/vasp.5.3/vasp > out.bands
@@ -85,7 +92,6 @@ sed -i "s/.*POTIM = .*/POTIM = 0.2/" INCAR.is%s.ib1
 sed -i "s/.*EDIFFG = .*/EDIFFG = -0.0005/" INCAR.is%s.ib1
 sed -i "s/ENCUT = .*/ENCUT = %s/" INCAR.is%s.ib1
 sed "s/IBRION = 1/IBRION = 2/" INCAR.is%s.ib1 > INCAR.is%s.ib2
-sed -i "s/LREAL = .*/LREAL = .FALSE./" INCAR*
 
 for it in 1 2 3
 do
@@ -100,8 +106,20 @@ mpirun -n $nprocs /projects/b1027/VASPwannier90.5.3.5/vasp.5.3/vasp > out.is%s.i
 mv OUTCAR OUTCAR.is%s.ib1.$it
 cp CONTCAR CONTCAR.is%s.ib1.$it
 cp CONTCAR POSCAR
-
 done\n\n'''
+
+# Elast text is similar to static but we don't calculate band structure or save
+# the CHGCAR
+# We also leave the vasprun alone rather than renaming it.
+elast_text = '''sed -i "s/NSW = .*/NSW = 0 # number of ionic steps/" INCAR.static
+sed -i "s/LCHARG = .FALSE./LCHARG = .TRUE./" INCAR.static
+sed -i "s/ISMEAR = .*/ISMEAR = -5/" INCAR.static
+sed -i "s/LREAL = .*/LREAL = .FALSE./" INCAR*
+cp INCAR.static INCAR
+cp KPOINTS.static KPOINTS
+mpirun -n $nprocs /projects/b1027/VASPwannier90.5.3.5/vasp.5.3/vasp > out.static
+mv OUTCAR OUTCAR.static
+rm CHGCAR WAVECAR\n'''
 
 #Commands for calculating DOS and band structure
 if args.jtype == 'static':
@@ -120,12 +138,16 @@ if args.jtype == 'relax':
         f.write(relax_text % tuple(a))
         f.write(static_text % (params[2], params[2]))
 
-
-
-
-
-
-
+if args.jtype == 'elast':
+    rel_encut = str(int(encut)*0.9)
+    isif = 4
+    with open('run_vasp.q', 'a') as f:
+        # Format relax_text with isif number and encut number
+        a = [isif]*9
+        a.append(rel_encut)
+        a.extend([isif]*12)
+        f.write(relax_text % tuple(a))
+        f.write(elast_text)
 
 
 
