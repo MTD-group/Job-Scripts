@@ -1,5 +1,5 @@
-#!/opt/apps/intel15/python/2.7.12/bin/python
-import argparse, os.path
+#!/opt/apps/intel17/python/2.7.12/bin/python
+import argparse, os.path, shutil
 
 # Author: Nick Wagner
 # This file requires an INCAR with the 
@@ -8,10 +8,10 @@ import argparse, os.path
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-n", action="store",
-        dest="arguments", default="32_jobname_8",
-        help='''Specify number of cpus, job name, and wall time
-        in hours separated by underscores: e.g. Num_Name_Time
-        32_jobname_8 is default''')
+        dest="arguments", default="4_jobname_8",
+        help='''Specify number of compute nodes, job name, and wall time
+        in hours separated by underscores: e.g. Num_Name_Time;
+        4_jobname_8 is the default. MPI task number will be set to 16*Num.''')
 parser.add_argument("-jt", action='store', dest='jtype', default='static',
         help='''Job type. 'static' and 'relax' are current options''')
 parser.add_argument("-isif", action='store', dest='isif', default=3,
@@ -29,8 +29,12 @@ if not os.path.isfile('POTCAR'):
 
 # If KPOINTS.static is not found, write one
 if not os.path.isfile('KPOINTS.static'):
+    shutil.copyfile("INCAR.static", "INCAR")
     import kpointer
 
+# If KPOINTS.bands is not found but called for, write one
+if not os.path.isfile('KPOINTS.bands') and args.jtype != 'elast':
+    import kpath
 
 # Store ENCUT value for changing later
 with open('INCAR.static', 'r') as inF:
@@ -43,7 +47,8 @@ with open('run_vasp.job', 'w') as f:
     f.write('#!/bin/bash\n')
     f.write('#SBATCH -J %s     # job name\n' % params[1])
     f.write('#SBATCH -o %s.o%%j    #output and error file name\n' % params[1])
-    f.write('#SBATCH -n %s\n' % params[0])
+    f.write('#SBATCH -N %s # Number of nodes\n' % params[0])
+    f.write('#SBATCH -n {} #number of mpi tasks\n'.format(int(params[0])*16))
     f.write('#SBATCH -p normal     # queue\n')
     f.write('#SBATCH -t %s:00:00      #run time (hh:mm:ss)\n' % params[2])
     f.write('#SBATCH -A TG-DMR110085     # account to charge\n')
@@ -54,20 +59,15 @@ with open('run_vasp.job', 'w') as f:
 static_text = '''cp INCAR.static INCAR
 cp KPOINTS.static KPOINTS
 sed -i "s/NSW = .*/NSW = 0 # number of ionic steps/" INCAR
-sed -i "s/LCHARG = .FALSE./LCHARG = .TRUE./" INCAR
-sed -i "s/ISMEAR = .*/ISMEAR = -5/" INCAR
+sed -i "s/LCHARG = .FALSE./LCHARG = .TRUE./" INCAR.static
 ibrun vasp_std > out.static
 mv OUTCAR OUTCAR.static
 mv vasprun.xml %s_dos.xml
-        
+
 sed "s/ICHARG = .*/ICHARG = 11/" INCAR.static > INCAR.bands
 sed -i "s/ISMEAR = .*/ISMEAR = 0/" INCAR.bands
 sed -i "s/.*SIGMA = .*/SIGMA = 0.1/" INCAR.bands
 sed -i "s/.*LCHARG = .*/LCHARG = .FALSE./" INCAR.bands
-sed -i "s/LREAL = .*/LREAL = .FALSE./" INCAR*
-aflow --kpath < POSCAR > KPOINTS.bands
-sed -i "1,/KPOINTS/d" KPOINTS.bands
-sed -i '$d' KPOINTS.bands
 cp KPOINTS.bands KPOINTS
 cp INCAR.bands INCAR
 ibrun vasp_std > out.bands
@@ -82,7 +82,7 @@ cp POSCAR POSCAR.orig
 sed "s/ISMEAR = .*/ISMEAR = 0/" INCAR.static > INCAR.is%s.ib1
 sed -i "s/.*SIGMA = .*/SIGMA = 0.1/" INCAR.is%s.ib1
 sed -i "s/.*LCHARG = .*/LCHARG = .FALSE./" INCAR.is%s.ib1
-sed -i "s/NSW = .*/NSW = 40/" INCAR.is%s.ib1
+sed -i "s/.*NSW = .*/NSW = 40/" INCAR.is%s.ib1
 sed -i "s/LREAL = .*/LREAL = .FALSE./" INCAR*
 sed -i "s/.*ISIF = .*/ISIF = %s/" INCAR.is%s.ib1
 sed -i "s/.*IBRION = .*/IBRION = 1/" INCAR.is%s.ib1
