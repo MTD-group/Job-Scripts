@@ -1,0 +1,66 @@
+# This is a sample PRECALC file for use with the k-point server. 
+# Place it in the same directory as your other input files and  
+# call getKPoints from that directory.  For more information,    
+# please see http://muellergroup.jhu.edu/K-Points.html           
+
+
+# Determines if the grid will contain the gamma point. AUTO 
+# selects the grid with the smallest number of irreducible 
+# k-points.
+# Allowed values:  TRUE, FALSE, AUTO
+INCLUDEGAMMA = AUTO
+
+
+# The header verbosity of the KPOINTS file
+# Allowed values:  SIMPLE, VERBOSE
+HEADER = SIMPLE
+
+
+# This parameter is used to auto-detect slabs, nanowires, and 
+# nanoparticles. If there is a gap (vacuum) that is at least 
+# GAPDISTANCE wide in the provided structure, the k-point 
+# density in the corresponding direction will be reduced 
+# accordingly.  GAPDISTANCE is given in Angstroms.
+GAPDISTANCE = 7
+
+
+# Removes symmetry operations from consideration when generating 
+# the k-point grid.
+# Allowed values: NONE, STRUCTURAL, ALL
+# 
+# NONE is the default value. The server will try to maximize the
+# number of symmetry operations used to reduce the k-point grid 
+# in a way that is consistent with the input files for the 
+# calculation.
+#
+# STRUCTURAL removes structural symmetry operations and retains  
+# only time-reversal symmetry.  If the calculation input files 
+# provided to the server specify that the system does not have 
+# time-reversal symmetry, then no symmetry operations will be 
+# used to reduce the grid.
+# 
+# ALL removes both structural and time-reversal symmetry 
+# operations.  Symmetry will not be use to reduce the number of 
+# k-points in the returned grid.
+REMOVE_SYMMETRY = NONE
+
+########################################################
+
+# The below parameters control the grid density.  Any  #
+# combination of them can be used.                     #
+
+########################################################
+
+# The minimum allowed distance in Angstroms between lattice 
+# points on the real-space superlattice (rmin in our paper).
+MINDISTANCE = 45
+
+
+# The minimum number of total k-points in the grid.
+#MINTOTALKPOINTS = 1
+
+
+# The minimum number of k-points per reciprocal atom. Please see 
+# our website regarding the usage of this parameter for slabs, 
+# nanowires, and nanoparticles.
+#KPPRA = 1
