@@ -7,32 +7,41 @@ import argparse, os.path
 # submission script writers.
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-m", action='store', dest='mtype', default='non_mag',
-        help='''Magnetism type. "non_mag" and "ferro" are current options. Default
-        is "non_mag"''')
-parser.add_argument("-name", action='store', dest='system_name', default='noname',
-        help='''System name. Default is "noname"''')
-args = parser.parse_args()
 
+# User can set system name if they want
+with open("POSCAR") as f:
+    poscar_name = f.readline().replace(" ","")
+parser.add_argument("-name", action='store', dest='system_name', default=poscar_name,
+
+# Let user set magnetization
+parser.add_argument("-m", action='store', dest='magmom',
+        help='''MAGMOM tag separated by '_': e.g. 2*0_2_-2_6*0; ISPIN is set
+        to 1 if not provided.''')
+
+# Hubbard U settings
+parser.add_argument("-hu", action='store', dest='hubU', default='False',
+        help='''Whether to use Dudarev's method to include onsite energy term.
+        Defaults to false.''')
+
+args = parser.parse_args()
+magmom = args.magmom.replace("_", " ")
+hubU = args.hubU
 
 # Text for a simple non-magnetic calculation of DOS
 nonmag_text = '''System = {0}
 #Start parameters
 ISTART =      1  #  job   : 0-new  1-cont  2-samecut
-ICHARG =      1  #  charge: 1-file 2-atom 10-const
-INIWAV =      1  #  electr: 0-lowe 1-rand
+ICHARG =      1  #  charge: 1-file 2-atom 11-const
 
 # Convergence tolerance
 EDIFF = 1e-7
-SYMPREC = 1e-4
-#ALGO = FAST
+SYMPREC = 1e-3
 NELM = 40
 
 # Density of States Info
 NEDOS = 3001
 EMIN = -12
 EMAX = 12
-
 LORBIT = 11
 
 # BZ Integrations
@@ -43,7 +52,7 @@ ISMEAR = -5
 LWAVE = .FALSE. # Do we want to write the wavefunctions
 LCHARG = .TRUE. # Do we want to write the charge density
 PREC = HIGH # ENCUT set according to PAW
-ENCUT = 625
+ENCUT = 600
 LREAL = .FALSE.
 LASPH = .TRUE.
 
@@ -61,16 +70,31 @@ LSCALU = .FALSE.
 NSIM   = 4
 GGA = PS # Use PBE-sol XC functional\n'''
 
+# Spin polarized parameters
 mag_text = '''#Magnetism
 ISPIN = 2
-#MAGMOM = 8*0 4.0*8 24*0
+#MAGMOM = {0}
 '''
 
-if args.mtype == 'non_mag':
-    with open('INCAR.static', 'w') as f:
-        f.write(nonmag_text.format(args.system_name))
+# Hubbard U parameters
+hubU_text = '''#LSDA + U
+LDAU = .TRUE.
+LDAUTYPE = 2
+LDAUL = {0} 
+LDAUU = {1} 
+LDAUJ = 0 0 0 
+LMAXMIX = {2}
+LDAUPRINT = 1
 
-if args.mtype == 'ferro':
+'''
+if not magmom:
     with open('INCAR.static', 'w') as f:
         f.write(nonmag_text.format(args.system_name))
-        f.write(mag_text)
+else:
+    if hubU is False:
+        with open('INCAR.static', 'w') as f:
+            f.write(nonmag_text.format(args.system_name))
+            f.write(mag_text.format(magmom))
+
+
+
