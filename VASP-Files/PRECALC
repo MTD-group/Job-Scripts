@@ -8,7 +8,7 @@
 # selects the grid with the smallest number of irreducible 
 # k-points.
 # Allowed values:  TRUE, FALSE, AUTO
-INCLUDEGAMMA = AUTO
+INCLUDEGAMMA = TRUE
 
 
 # The header verbosity of the KPOINTS file
