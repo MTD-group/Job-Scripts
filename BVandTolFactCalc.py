@@ -58,24 +58,19 @@ def calc_tol_factor(ion_list, valence_list, rp=0):
     return tol_fact
 
 # Test using BaMnO3
-print(calc_tol_factor(['Ba', 'Mn','O'], ['2+', '4+', '2-']))
-print(calc_tol_factor(['Ba', 'Mn','O'], ['2+', '4+', '2-'], rp=2))
-
-# In[5]:
-
-df = pd.read_excel("Dataset.xlsx",sheetname="Combined_MIT+nonMIT")
-df.head()
+print(calc_tol_factor(['Ba', 'Mn','O'], ['2+', '4+', '-2']))
+print(calc_tol_factor(['Ba', 'Mn','O'], ['2+', '4+', '-2'], rp=2))
 
 
 # In[38]:
 
-def isanion(atom, anions=['O', 'S']):
+def isanion(atom, anions=['O', 'S', 'F', 'Cl']):
     #print "in isanion fun... atom is {} and anions are {}".format(atom, anions)
     check = atom in anions
     return check
 
 def iscation(atom, cations):
-    check = atom not in ['O', 'S'] 
+    check = atom not in ['O', 'S', 'F', 'Cl'] 
     return check    
 
 def gii_compute(struct, cations, anions):
@@ -129,7 +124,7 @@ for i in range(len(df.index)):
     valences = [float(x) for x in df.loc[i, "formal_val"].split('_')]
     formal_valence = dict(zip(elements, valences))
     try:
-        gii = gii_compute(struct, elements[:-1], elements[-1])
+        gii = gii_compute(struct, elements[:-1], elements[-1:]) # Change 1 to 2 for double anion systems
     except(AttributeError):
         gii = 999
         print("Your compound: {} has disorder and will not be calculated".format(elements))
