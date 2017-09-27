@@ -31,7 +31,7 @@ elem_dict = {
         'Sc': 'Sc_sv',
         'Ti': 'Ti_sv',
         'V' : 'V_sv',
-        'Cr': 'Cr_v',
+        'Cr': 'Cr_pv',
         'Mn': 'Mn_pv',
         'Fe': 'Fe',
         'Co': 'Co',
