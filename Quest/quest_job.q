@@ -9,6 +9,6 @@
 #SBATCH -t 2:00:00            # wall time (hh:mm:ss)
 #SBATCH --mail-user=YourName@u.northwestern.edu 
 #SBATCH --mail-type=begin      # email when job starts
-#SBATCH --mail-type=end        # email when job ends
-# Uses default modules: intel/2016.0, mpi/openmpi-1.6.3-intel2013.2  
+#SBATCH --mail-type=end        # email when job ends 
+# Uses default modules: intel/2013.2   mpi/intel-mpi-4.1.0
 mpirun -n $SLURM_NTASKS /projects/b1027/VASPmod.5.4.4/vasp_std > out
